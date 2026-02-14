@@ -91,10 +91,12 @@ function showDate(){
         out.innerHTML = `اليوم غير صحيح لهذا الشهر. هذا الشهر يحتوي على ${daysInMonth} يوم فقط.`;
         return;
     }
-    const dd = String(d).padStart(2,"0");
-    const mm = String(m).padStart(2,"0");
+    
+const dd = String(d).padStart(2, "0");
+const mm = String(m).padStart(2, "0");
 
 out.innerHTML = `التاريخ المختار هو: ${dd}/${mm}/${y}`;
+
 </script>
 
 </body>
