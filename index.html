@@ -65,8 +65,52 @@ button{
 </div>
 
 <script>
-function showDate(){
+function (){
+<script>
+  const babylonMonths = [
+    "رمضان",
+    "شوال",
+    "ذو القعدة",
+    "ذو الحجة",
+    "محرم",
+    "صفر",
+    "ربيع الأول",
+    "ربيع الثاني",
+    "جمادى الأولى",
+    "جمادى الآخرة",
+    "رجب",
+    "شعبان"
+  ];
 
+  function showDate() {
+    const d = parseInt(document.getElementById("day").value, 10);
+    const m = parseInt(document.getElementById("month").value, 10);
+    const y = parseInt(document.getElementById("year").value, 10);
+    const out = document.getElementById("output");
+
+    if (!d || !m || !y) {
+      out.innerHTML = "الرجاء إدخال جميع القيم";
+      return;
+    }
+
+    if (m < 1 || m > 12) {
+      out.innerHTML = "الشهر يجب أن يكون بين 1 و 12";
+      return;
+    }
+
+    // تحقق بسيط لعدد الأيام (مثل كودك الحالي)
+    let maxDays = 30;
+    if (m === 2) maxDays = 29;
+
+    if (d < 1 || d > maxDays) {
+      out.innerHTML = "اليوم غير صحيح لهذا الشهر";
+      return;
+    }
+
+    const monthName = babylonMonths[m - 1];
+    out.innerHTML = `التاريخ حسب تقويم بابل: ${d} ${monthName} ${y}`;
+  }
+</script>
     let d = parseInt(document.getElementById("day").value);
     let m = parseInt(document.getElementById("month").value);
     let y = parseInt(document.getElementById("year").value);
