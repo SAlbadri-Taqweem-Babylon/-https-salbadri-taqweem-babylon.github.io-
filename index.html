@@ -1,10 +1,3 @@
-الهجري القمري: ${hijr}<br>
-البابلي الشمسي: ${bab}`;
-
-}
-
-window.onload = function(){الهجري القمري: ${hijr}<br>
-البابلي الشمسي: ${bab}`;
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -17,136 +10,66 @@ window.onload = function(){الهجري القمري: ${hijr}<br>
 <script src="https://cdn.jsdelivr.net/npm/moment-jalaali@0.9.4/build/moment-jalaali.js"></script>
 
 <style>
-body{font-family:Arial;background:#f4f6f9;text-align:center;margin:0}
-h1{margin-top:30px;color:#1f6f43;font-size:42px}
-.container{max-width:800px;margin:20px auto;background:#fff;padding:25px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,.1)}
-input,select{padding:12px;margin:6px;width:150px;text-align:center;font-size:16px}
-button{background:#1f6f43;color:#fff;border:none;padding:12px 25px;border-radius:10px;font-size:18px;cursor:pointer}
-.results{margin-top:20px;background:#e3f2fd;padding:15px;border-radius:12px;font-weight:bold}
+body{font-family:Arial;text-align:center;background:#f4f6f9}
+h1{color:#1f6f43}
+.container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:15px}
+input,select{padding:10px;margin:4px;width:150px;text-align:center}
+button{background:#1f6f43;color:white;border:none;padding:12px 20px;border-radius:10px}
 </style>
 </head>
 
 <body>
 
 <h1>تقويم بابل</h1>
+<div id="output"></div>
 
 <div class="container">
-
-<input type="number" id="day" placeholder="اليوم">
-<input type="number" id="month" placeholder="الشهر">
-<input type="number" id="year" placeholder="السنة">
-
-<br>
-
-<select id="inputType">
-<option value="b" selected>الإدخال: بابلي شمسي</option>
-<option value="g">الإدخال: ميلادي</option>
-<option value="h">الإدخال: هجري قمري</option>
-</select>
+<input id="day" type="number" placeholder="اليوم">
+<input id="month" type="number" placeholder="الشهر">
+<input id="year" type="number" placeholder="السنة">
 
 <br><br>
 
-<button onclick="convertAll()">تحويل</button>
+<select id="inputType">
+<option value="g">ميلادي</option>
+<option value="h">هجري قمري</option>
+<option value="b">بابلي شمسي</option>
+</select>
 
-<div class="results" id="results"></div>
+<input id="hijriOffset" type="number" value="0">
 
+<br><br>
+<button onclick="convert()">تحويل</button>
+
+<div id="results"></div>
 </div>
 
 <script>
-
-const babylonMonths = [
-"رمضان","شوال","ذو القعدة","ذو الحجة",
-"محرم","صفر","ربيع الأول","ربيع الثاني",
-"جمادى الأولى","جمادى الآخرة","رجب","شعبان"
-];
-
-function convertAll(){
-
-let d = parseInt(document.getElementById("day").value);
-let m = parseInt(document.getElementById("month").value);
-let y = parseInt(document.getElementById("year").value);
-let type = document.getElementById("inputType").value;
-
-if(!d || !m || !y){
-alert("أدخل جميع القيم");
-return;
-}
+function convert(){
+const d=document.getElementById("day").value;
+const m=document.getElementById("month").value;
+const y=document.getElementById("year").value;
+const type=document.getElementById("inputType").value;
 
 let base;
 
-if(type==="g"){
-base = moment(`${y}-${m}-${d}`,"YYYY-M-D",true);
+if(type==="g") base=moment(`${y}-${m}-${d}`,"YYYY-M-D");
+if(type==="h") base=moment(`${y}/${m}/${d}`,"iYYYY/iM/iD");
+if(type==="b") base=moment(`${y}/${m}/${d}`,"jYYYY/jM/jD");
+
+document.getElementById("results").innerHTML=
+"الميلادي: "+base.format("YYYY/MM/DD")+"<br>"+
+"الهجري: "+base.format("iYYYY/iM/iD")+"<br>"+
+"البابلي: "+base.format("jYYYY/jM/jD");
 }
 
-if(type==="h"){
-let h = moment(`${y}/${m}/${d}`,"iYYYY/iM/iD",true);
-base = h.clone();
+window.onload=function(){
+const t=moment();
+document.getElementById("output").innerHTML=
+"📅 اليوم: "+t.format("dddd")+"<br>"+
+"الميلادي: "+t.format("YYYY/MM/DD")+"<br>"+
+"الهجري: "+t.format("iYYYY/iM/iD");
 }
-
-if(type==="b"){
-let b = moment(`${y}/${m}/${d}`,"jYYYY/jM/jD",true);
-base = b.clone();
-}
-
-if(!base.isValid()){
-alert("تاريخ غير صحيح");
-return;
-}
-
-let greg = base.format("YYYY/MM/DD");
-let hijr = base.clone().format("iYYYY/iM/iD");
-
-let jy = base.jYear();
-let jm = base.jMonth()+1;
-let jd = base.jDate();
-let babName = babylonMonths[jm-1];
-let bab = `${jd} ${babName} ${jy}`;
-
-const days = ["الأحد","الاثنين","الثلاثاء","الأربعاء","
-let dayName = days[base.day()];
-
-document.getElementById("results").innerHTML =
-`📅 اليوم: ${dayName}<br><br>
-الميلادي: ${greg}<br>
-الهجري القمري: ${hijr}<br>
-البابلي الشمسي: ${bab}`;
-
-}
-
-window.onload = function(){
-let today = moment();
-document.getElementById("day").value = today.jDate();
-document.getElementById("month").value = today.jMonth()+1;
-document.getElementById("year").value = today.jYear();
-convertAll();
-};
-
-</script>
-
-</body>
-</html>
-}
-
-window.onload = function(){
-let today = moment();
-document.getElementById("day").value = today.jDate();
-document.getElementById("month").value = today.jMonth()+1;
-document.getElementById("year").value = today.jYear();
-convertAll();
-};
-
-</script>
-
-</body>
-</html>
-
-let today = moment();
-document.getElementById("day").value = today.jDate();
-document.getElementById("month").value = today.jMonth()+1;
-document.getElementById("year").value = today.jYear();
-convertAll();
-};
-
 </script>
 
 </body>
