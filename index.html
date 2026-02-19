@@ -147,26 +147,6 @@ window.onload = function () {
     `;
 };
 
- // تعبئة تاريخ اليوم تلقائياً + تنفيذ التحويل مباشرة (خطوة واحدة)
-window.addEventListener("DOMContentLoaded", () => {
-  const now = new Date();
-
-  // تعبئة حقول اليوم/الشهر/السنة
-  const dEl = document.getElementById("day");
-  const mEl = document.getElementById("month");
-  const yEl = document.getElementById("year");
-
-  if (dEl) dEl.value = now.getDate();
-  if (mEl) mEl.value = now.getMonth() + 1;
-  if (yEl) yEl.value = now.getFullYear();
-
-  // اختيار الوضع الافتراضي (اختياري) — غيّر القيمة حسب ما عندك في <option value="">
-  // مثال: إذا تريد الصفحة تبدأ على "B" خليها تساوي قيمة B الموجودة عندك
-  const modeEl = document.getElementById("mode");
-  // modeEl.value = "b2h";  // مثال فقط
-
-  // تشغيل التحويل تلقائياً إذا دالة convert موجودة
-  if (typeof convert === "function") convert();
 }); 
 </script>
 </body>
