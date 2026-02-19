@@ -1,3 +1,10 @@
+الهجري القمري: ${hijr}<br>
+البابلي الشمسي: ${bab}`;
+
+}
+
+window.onload = function(){الهجري القمري: ${hijr}<br>
+البابلي الشمسي: ${bab}`;
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -95,7 +102,7 @@ let jd = base.jDate();
 let babName = babylonMonths[jm-1];
 let bab = `${jd} ${babName} ${jy}`;
 
-const days = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const days = ["الأحد","الاثنين","الثلاثاء","الأربعاء","
 let dayName = days[base.day()];
 
 document.getElementById("results").innerHTML =
@@ -107,6 +114,32 @@ document.getElementById("results").innerHTML =
 }
 
 window.onload = function(){
+let today = moment();
+document.getElementById("day").value = today.jDate();
+document.getElementById("month").value = today.jMonth()+1;
+document.getElementById("year").value = today.jYear();
+convertAll();
+};
+
+</script>
+
+</body>
+</html>
+}
+
+window.onload = function(){
+let today = moment();
+document.getElementById("day").value = today.jDate();
+document.getElementById("month").value = today.jMonth()+1;
+document.getElementById("year").value = today.jYear();
+convertAll();
+};
+
+</script>
+
+</body>
+</html>
+
 let today = moment();
 document.getElementById("day").value = today.jDate();
 document.getElementById("month").value = today.jMonth()+1;
