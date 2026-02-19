@@ -5,347 +5,465 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>تقويم بابل</title>
 
-  <!-- Moment + Hijri + Jalaali -->
+  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.2/moment-hijri.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/moment-jalaali@0.9.2/build/moment-jalaali.js"></script>
 
   <style>
     :root{
-      --green:#1f6f43;
-      --bg:#f3f5f7;
+      --teal:#0b6b69;
+      --teal2:#0a5f5d;
+      --bg:#f2f4f6;
       --card:#ffffff;
-      --text:#1b1b1b;
-      --muted:#6b7280;
-      --border:#d1d5db;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e5e7eb;
+      --accent:#d18b00;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Arial, "Cairo", "Amiri", sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      text-align:center;
-      padding:20px 12px;
-    }
-    h1{
-      margin:10px 0 6px;
-      color:var(--green);
-      font-size:44px;
-      letter-spacing:0.5px;
-    }
-    .sub{
-      margin:0 0 16px;
-      color:var(--muted);
-      font-size:14px;
-    }
-    .card{
-      width:min(520px, 100%);
-      margin:0 auto;
-      background:var(--card);
-      border-radius:18px;
-      box-shadow:0 10px 25px rgba(0,0,0,0.08);
-      padding:18px 14px 16px;
-    }
-    .today{
-      margin:8px 0 14px;
-      line-height:1.6;
-      font-size:18px;
-      font-weight:700;
-    }
-    .today small{
-      display:block;
-      font-weight:600;
-      color:#111;
-      margin-top:4px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    label{
-      display:block;
-      text-align:right;
-      font-size:13px;
-      color:var(--muted);
-      margin:0 4px 6px;
-    }
-    input, select{
-      width:100%;
-      padding:12px 12px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      font-size:18px;
-      outline:none;
-      background:#fff;
-    }
-    input:focus, select:focus{
-      border-color:var(--green);
-      box-shadow:0 0 0 3px rgba(31,111,67,0.15);
-    }
-    .row2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .btn{
-      margin-top:14px;
-      width:100%;
-      padding:12px 14px;
-      border:none;
-      border-radius:12px;
-      background:var(--green);
+    body{margin:0;font-family:Arial,"Cairo","Amiri",sans-serif;background:var(--bg);color:var(--text)}
+
+    .topbar{
+      background:var(--teal);
       color:#fff;
-      font-size:20px;
-      font-weight:800;
-      cursor:pointer;
+      padding:14px 14px 10px;
+      position:sticky; top:0; z-index:10;
+      box-shadow:0 8px 18px rgba(0,0,0,.10);
     }
-    .btn:active{transform:scale(0.99)}
-    .out{
-      margin-top:14px;
-      text-align:right;
-      background:#f8fafc;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:12px 12px;
-      line-height:1.75;
-      font-size:18px;
-      font-weight:700;
-    }
-    .out .muted{
-      font-weight:600;
-      color:var(--muted);
-      font-size:14px;
-      margin-top:6px;
-      display:block;
-    }
-    .pill{
-      display:inline-block;
-      padding:3px 8px;
+    .topbar .brand{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .brand h1{margin:0;font-size:28px;font-weight:1000}
+    .brand .sub{margin-top:6px;font-size:13px;opacity:.9;font-weight:800}
+    .tabs{margin-top:12px;display:flex;gap:10px;overflow:auto;padding-bottom:6px}
+    .tab{
+      white-space:nowrap;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      padding:10px 12px;
       border-radius:999px;
-      background:rgba(31,111,67,0.12);
-      color:var(--green);
-      font-size:13px;
-      font-weight:800;
-      margin-inline-start:6px;
+      font-weight:1000;
+      font-size:14px;
+      cursor:pointer;
+      user-select:none;
     }
-    .hint{
-      margin-top:10px;
-      font-size:13px;
+    .tab.active{background:#fff;color:var(--teal);border-color:#fff}
+
+    .wrap{width:min(820px,100%);margin:14px auto 24px;padding:0 12px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:0 10px 26px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+
+    .header-strip{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      background:#f8fafc;
+    }
+    .header-strip .title{font-size:20px;font-weight:1000;color:var(--teal2);margin:0}
+    .header-strip .desc{margin:6px 0 0;color:var(--muted);font-size:13px;font-weight:800;line-height:1.5}
+
+    .month-nav{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:14px;background:#fff;border-bottom:1px solid var(--line);
+    }
+    .navbtn{
+      background:var(--teal);color:#fff;border:none;
+      padding:10px 12px;border-radius:12px;font-weight:1000;cursor:pointer;min-width:110px;
+    }
+    .navbtn:active{transform:scale(.99)}
+    .month-label{text-align:center;flex:1}
+    .month-label .m1{font-size:24px;font-weight:1000;color:var(--text);margin:0}
+    .month-label .m2{margin-top:6px;font-size:13px;font-weight:900;color:var(--muted)}
+
+    .cal{padding:12px 12px 16px;background:#fff}
+    .dow{
+      display:grid;grid-template-columns:repeat(7,1fr);gap:8px;
+      padding:4px 2px 10px;color:var(--muted);font-weight:1000;font-size:13px;
+    }
+    .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+
+    .day{
+      border:1px solid var(--line);
+      border-radius:14px;
+      min-height:82px;
+      padding:10px 10px 8px;
+      position:relative;
+      background:#fff;
+      text-align:right;
+    }
+    .day.muted{opacity:.45;background:#fafafa}
+    .day.today{background:rgba(11,107,105,.10);border-color:rgba(11,107,105,.35)}
+
+    .big{font-size:22px;font-weight:1100;color:var(--text);line-height:1}
+    .smrow{
+      margin-top:8px;
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:12px;
+      font-weight:1000;
       color:var(--muted);
-      line-height:1.6;
     }
+    .smrow .g{direction:ltr;text-align:left}
+    .smrow .h{direction:ltr;text-align:right}
+    .badge{
+      position:absolute;left:8px;top:8px;font-size:12px;font-weight:1100;color:var(--accent);
+    }
+
+    .footer-range{
+      padding:12px 14px 14px;border-top:1px solid var(--line);
+      background:#fff;color:var(--teal2);font-weight:1000;text-align:center;line-height:1.9;
+    }
+    .footer-range .subline{color:var(--muted);font-weight:900;font-size:13px}
+
+    .convert{padding:14px;background:#fff}
+    label{display:block;text-align:right;font-weight:1000;color:var(--muted);font-size:13px;margin:10px 2px 6px}
+    input,select{
+      width:100%;padding:12px;border:1px solid var(--line);
+      border-radius:12px;font-size:18px;outline:none;background:#fff
+    }
+    input:focus,select:focus{border-color:rgba(11,107,105,.55);box-shadow:0 0 0 3px rgba(11,107,105,.12)}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{
+      margin-top:14px;width:100%;background:var(--teal);border:none;color:#fff;
+      padding:12px 14px;border-radius:14px;font-size:20px;font-weight:1100;cursor:pointer
+    }
+    .result{
+      margin-top:12px;border:1px solid var(--line);background:#f8fafc;border-radius:14px;
+      padding:12px;font-weight:1000;line-height:1.9;text-align:right
+    }
+    .note{margin-top:10px;color:var(--muted);font-weight:900;font-size:13px;line-height:1.6}
+
+    .section{display:none}
+    .section.active{display:block}
   </style>
 </head>
 
 <body>
-  <h1>تقويم بابل</h1>
-  <div class="sub">ميلادي ⇄ هجري ⇄ بابلي (جلالي)</div>
-
-  <div class="card">
-    <div class="today" id="todayBox">...</div>
-
-    <div class="grid">
-      <div class="row2">
-        <div>
-          <label for="day">اليوم</label>
-          <input id="day" type="number" min="1" max="31" placeholder="مثال: 19">
-        </div>
-        <div>
-          <label for="month">الشهر</label>
-          <input id="month" type="number" min="1" max="12" placeholder="مثال: 2">
-        </div>
-      </div>
-
+  <div class="topbar">
+    <div class="brand">
       <div>
-        <label for="year">السنة</label>
-        <input id="year" type="number" min="1" max="3000" placeholder="مثال: 2026">
+        <h1>تقويم بابل</h1>
+        <div class="sub">الهجري الشمسي • الهجري • الميلادي</div>
       </div>
+      <div style="font-weight:1100;opacity:.95;">مع</div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="tabCalendar">تاريخ اليوم</div>
+      <div class="tab" id="tabConvert">تحويل التاريخ</div>
+    </div>
+  </div>
 
-      <div class="row2">
-        <div>
-          <label for="mode">نوع الإدخال</label>
-          <select id="mode">
-            <option value="greg">ميلادي</option>
-            <option value="hijri">هجري</option>
-            <option value="jalaali">بابلي (جلالي)</option>
-          </select>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- Calendar -->
+      <div class="section active" id="sectionCalendar">
+        <div class="header-strip">
+          <p class="title" id="calTitle">التقويم</p>
+          <p class="desc" id="calDesc">...</p>
         </div>
-        <div>
-          <label for="show60">الأرقام البابليّة</label>
-          <select id="show60">
-            <option value="base10">عادية (10)</option>
-            <option value="base60">بابلي (ستيني)</option>
-          </select>
+
+        <div class="month-nav">
+          <button class="navbtn" id="prevMonth">قبل شهر واحد</button>
+          <div class="month-label">
+            <p class="m1" id="monthLabel">—</p>
+            <div class="m2" id="monthSubLabel">—</div>
+          </div>
+          <button class="navbtn" id="nextMonth">الشهر القادم</button>
+        </div>
+
+        <div class="cal">
+          <div class="dow" id="dowRow"></div>
+          <div class="grid" id="calGrid"></div>
+        </div>
+
+        <div class="footer-range" id="rangeFooter">—</div>
+      </div>
+
+      <!-- Convert -->
+      <div class="section" id="sectionConvert">
+        <div class="header-strip">
+          <p class="title">تحويل التاريخ</p>
+          <p class="desc">أدخل التاريخ واختر نوع الإدخال لتحصل على التحويل إلى (ميلادي/هجري/هجري شمسي).</p>
+        </div>
+
+        <div class="convert">
+          <div class="row2">
+            <div>
+              <label for="day">اليوم</label>
+              <input id="day" type="number" min="1" max="31" placeholder="مثال: 19">
+            </div>
+            <div>
+              <label for="month">الشهر</label>
+              <input id="month" type="number" min="1" max="12" placeholder="مثال: 2">
+            </div>
+          </div>
+
+          <label for="year">السنة</label>
+          <input id="year" type="number" min="1" max="3000" placeholder="مثال: 2026">
+
+          <div class="row2">
+            <div>
+              <label for="mode">نوع الإدخال</label>
+              <select id="mode">
+                <option value="greg">ميلادي</option>
+                <option value="hijri">هجري</option>
+                <option value="solar">هجري شمسي</option>
+              </select>
+            </div>
+            <div>
+              <label for="digits">الأرقام</label>
+              <select id="digits">
+                <option value="base10">عادية (10)</option>
+                <option value="base60">ستينية (بابلي)</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn" id="convertBtn">تحويل</button>
+          <div class="result" id="resultBox" style="display:none;"></div>
+
+          <div class="note">
+            ملاحظة: الهجري الشمسي هنا محسوب بمكتبة <b>moment-jalaali</b>.
+          </div>
         </div>
       </div>
 
-      <button class="btn" id="convertBtn">تحويل</button>
-
-      <div class="out" id="resultBox" style="display:none;"></div>
-
-      <div class="hint">
-        ملاحظة: “البابلي” هنا محسوب بتقويم <b>الجلالي (Jalali)</b> باستخدام مكتبة moment-jalaali،
-        ويمكن عرض تمثيل ستيني (Base-60) كصيغة “أرقام بابلية” علمية.
-      </div>
     </div>
   </div>
 
 <script>
-  // تفعيل الجلالي/الفارسية داخل moment-jalaali (مع إبقاء الأرقام عادية)
   if (typeof moment !== "undefined" && moment.loadPersian) {
     moment.loadPersian({ usePersianDigits: false, dialect: "persian-modern" });
   }
 
   const daysAr = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-
+  const dowAr = ["السبت","الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
   const gregMonthsAr = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
   const hijriMonthsAr = ["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
-  // الجلالي (فارسي/جلالي) — ولأغراض مشروعك نسميه “بابلي”
-  const jalaaliMonthsAr = ["فروردين","أرديبهشت","خرداد","تير","مرداد","شهريور","مهر","آبان","آذر","دي","بهمن","اسفند"];
+  const solarMonthsAr = ["فروردين","أرديبهشت","خرداد","تير","مرداد","شهريور","مهر","آبان","آذر","دي","بهمن","اسفند"];
+  const pad2 = (n)=> String(n).padStart(2,"0");
 
-  // أسماء شهور بابلية (أكّدية شائعة) — عرضها كهوية للمشروع
-  const babylonMonthsAkk = ["نيسانو","أيارو","سيمانو","دوموزو","أبو","أولولو","تشرّيتو","أرَخشمنو","كِسليمو","تيبِتو","شباطو","أدارو"];
-
-  function pad2(n){ return String(n).padStart(2, "0"); }
-
-  // تمثيل بابلي ستيني (Base-60) بسيط: a:bb
   function toBase60(n){
     n = Number(n);
     if (!Number.isFinite(n)) return "";
-    const a = Math.floor(n / 60);
-    const b = Math.abs(n % 60);
+    const a = Math.floor(n/60);
+    const b = Math.abs(n%60);
     return `${a}:${String(b).padStart(2,"0")}`;
   }
 
-  function showToday(){
+  // Tabs
+  const tabCalendar = document.getElementById("tabCalendar");
+  const tabConvert  = document.getElementById("tabConvert");
+  const sectionCalendar = document.getElementById("sectionCalendar");
+  const sectionConvert  = document.getElementById("sectionConvert");
+
+  function setTab(which){
+    const isCal = which === "cal";
+    tabCalendar.classList.toggle("active", isCal);
+    tabConvert.classList.toggle("active", !isCal);
+    sectionCalendar.classList.toggle("active", isCal);
+    sectionConvert.classList.toggle("active", !isCal);
+  }
+  tabCalendar.addEventListener("click", ()=>setTab("cal"));
+  tabConvert.addEventListener("click", ()=>setTab("conv"));
+
+  // Calendar state
+  let view = moment();
+  let viewJYear = view.jYear();
+  let viewJMonth = view.jMonth();
+
+  // DOW header
+  const dowRow = document.getElementById("dowRow");
+  dowRow.innerHTML = dowAr.map(d=>`<div>${d}</div>`).join("");
+
+  function renderCalendar(){
+    const grid = document.getElementById("calGrid");
+    grid.innerHTML = "";
+
+    const startOfMonth = moment().jYear(viewJYear).jMonth(viewJMonth).jDate(1).startOf("day");
+    const daysInMonth  = startOfMonth.jDaysInMonth();
+
+    const firstDow = startOfMonth.day(); // 0=Sun..6=Sat
+    const offset = (firstDow + 1) % 7;   // السبت=0
+
+    // Title
+    const monthName = solarMonthsAr[viewJMonth] || "—";
+    document.getElementById("monthLabel").textContent = `${monthName} ${viewJYear}`;
+
+    // Sub label ranges
+    const startG = startOfMonth.clone();
+    const endG   = startOfMonth.clone().jDate(daysInMonth);
+
+    const startGText = `${gregMonthsAr[startG.month()]} ${startG.year()}`;
+    const endGText   = `${gregMonthsAr[endG.month()]} ${endG.year()}`;
+
+    const startH = startOfMonth.clone();
+    const endH   = endG.clone();
+
+    const startHText = `${hijriMonthsAr[Number(startH.format("iM"))-1]} ${startH.format("iYYYY")}`;
+    const endHText   = `${hijriMonthsAr[Number(endH.format("iM"))-1]} ${endH.format("iYYYY")}`;
+
+    document.getElementById("monthSubLabel").textContent =
+      `${startGText} - ${endGText} • ${startHText} - ${endHText}`;
+
+    // Header description (today)
     const now = new Date();
-    const dayName = daysAr[now.getDay()];
-    const g = moment();
-    const gY = g.format("YYYY");
-    const gM = g.format("M");
-    const gD = g.format("D");
+    const todayName = daysAr[now.getDay()];
+    const today = moment().startOf("day");
+    const todaySolar = `${today.jYear()}/${pad2(today.jMonth()+1)}/${pad2(today.jDate())}`;
+    const todayGreg  = `${today.year()}/${pad2(today.month()+1)}/${pad2(today.date())}`;
+    const todayHijri = today.format("iYYYY/iMM/iDD");
 
-    const h = moment().format("iYYYY/iM/iD");
-    const j = moment().format("jYYYY/jM/jD");
+    document.getElementById("calTitle").textContent = `التقويم ${viewJYear}`;
+    document.getElementById("calDesc").innerHTML =
+      `<b>${todayName}</b> : اليوم<br>` +
+      `الهجري الشمسي: <b>${todaySolar}</b> • الميلادي: <b>${todayGreg}</b> • الهجري: <b>${todayHijri}</b>`;
 
-    const gMonthName = gregMonthsAr[Number(gM)-1] || "";
-    const jMonthName = jalaaliMonthsAr[moment().jMonth()] || "";
-    const babMonthName = babylonMonthsAkk[moment().jMonth()] || "";
+    // previous month cells
+    const prevMonth = startOfMonth.clone().subtract(1, "jMonth");
+    const prevDays = prevMonth.jDaysInMonth();
+    for(let i=0;i<offset;i++){
+      const jDay = prevDays - (offset - 1 - i);
+      const cellDate = prevMonth.clone().jDate(jDay);
+      grid.appendChild(dayCell(cellDate, true));
+    }
 
-    document.getElementById("todayBox").innerHTML =
-      `${dayName} : اليوم <span class="pill">📅</span>` +
-      `<small>الميلادي: ${gY}/${pad2(gM)}/${pad2(gD)} (${gMonthName})</small>` +
-      `<small>الهجري: ${h} </small>` +
-      `<small>البابلي (جلالي): ${j} (${babMonthName} / ${jMonthName})</small>`;
+    // current month cells
+    for(let d=1; d<=daysInMonth; d++){
+      const cellDate = startOfMonth.clone().jDate(d);
+      grid.appendChild(dayCell(cellDate, false));
+    }
+
+    // fill to complete week rows
+    while(grid.children.length % 7 !== 0){
+      const last = startOfMonth.clone().jDate(daysInMonth);
+      const nextIndex = grid.children.length - (offset + daysInMonth) + 1;
+      const cellDate = last.clone().add(nextIndex, "day");
+      grid.appendChild(dayCell(cellDate, true));
+    }
+
+    // Footer
+    const gRange = `${gregMonthsAr[startG.month()]} - ${gregMonthsAr[endG.month()]} ${endG.year()}`;
+    const hRange = `${hijriMonthsAr[Number(startH.format("iM"))-1]} - ${hijriMonthsAr[Number(endH.format("iM"))-1]} ${endH.format("iYYYY")}`;
+    document.getElementById("rangeFooter").innerHTML =
+      `<div>${gRange}</div><div class="subline">${hRange}</div>`;
   }
 
+  function dayCell(m, muted){
+    const div = document.createElement("div");
+    div.className = "day" + (muted ? " muted" : "");
+
+    const isToday = m.clone().startOf("day").isSame(moment().startOf("day"));
+    if(isToday) div.classList.add("today");
+
+    const solarDay = m.jDate();                 // كبير
+    const gregDay  = m.date();                  // صغير 1
+    const hijriDay = Number(m.format("iD"));    // صغير 2 (هجري قمري)
+
+    const dow = m.day();
+    const isFriday = (dow === 5);
+    const badgeText = isFriday ? "جمعة" : "";
+
+    div.innerHTML = `
+      ${badgeText ? `<div class="badge">${badgeText}</div>` : ``}
+      <div class="big">${solarDay}</div>
+      <div class="smrow">
+        <div class="g">${gregDay}</div>
+        <div class="h">${hijriDay}</div>
+      </div>
+    `;
+    return div;
+  }
+
+  document.getElementById("prevMonth").addEventListener("click", ()=>{
+    const m = moment().jYear(viewJYear).jMonth(viewJMonth).jDate(1).subtract(1,"jMonth");
+    viewJYear = m.jYear();
+    viewJMonth = m.jMonth();
+    renderCalendar();
+  });
+
+  document.getElementById("nextMonth").addEventListener("click", ()=>{
+    const m = moment().jYear(viewJYear).jMonth(viewJMonth).jDate(1).add(1,"jMonth");
+    viewJYear = m.jYear();
+    viewJMonth = m.jMonth();
+    renderCalendar();
+  });
+
+  // Converter
   function parseInputs(){
     const d = Number(document.getElementById("day").value);
     const m = Number(document.getElementById("month").value);
     const y = Number(document.getElementById("year").value);
-    if (!Number.isInteger(d) || !Number.isInteger(m) || !Number.isInteger(y)) {
-      return { ok:false, msg:"رجاءً أدخل اليوم/الشهر/السنة بشكل صحيح." };
-    }
-    if (d < 1 || d > 31) return { ok:false, msg:"اليوم يجب أن يكون بين 1 و 31." };
-    if (m < 1 || m > 12) return { ok:false, msg:"الشهر يجب أن يكون بين 1 و 12." };
-    if (y < 1 || y > 3000) return { ok:false, msg:"السنة غير منطقية." };
-    return { ok:true, d, m, y };
+    if(!Number.isInteger(d)||!Number.isInteger(m)||!Number.isInteger(y)) return {ok:false,msg:"رجاءً أدخل اليوم/الشهر/السنة بشكل صحيح."};
+    if(d<1||d>31) return {ok:false,msg:"اليوم يجب أن يكون بين 1 و 31."};
+    if(m<1||m>12) return {ok:false,msg:"الشهر يجب أن يكون بين 1 و 12."};
+    if(y<1||y>3000) return {ok:false,msg:"السنة غير منطقية."};
+    return {ok:true,d,m,y};
   }
 
   function convert(){
     const mode = document.getElementById("mode").value;
-    const digitsMode = document.getElementById("show60").value;
-
-    const inp = parseInputs();
+    const digits = document.getElementById("digits").value;
     const box = document.getElementById("resultBox");
     box.style.display = "block";
 
-    if (!inp.ok){
-      box.innerHTML = `⚠️ ${inp.msg}`;
-      return;
+    const inp = parseInputs();
+    if(!inp.ok){ box.textContent = `⚠️ ${inp.msg}`; return; }
+    const {d,m,y} = inp;
+
+    let base;
+    if(mode==="greg"){
+      base = moment(`${y}/${m}/${d}`, "YYYY/M/D", true);
+    }else if(mode==="hijri"){
+      base = moment(`${y}/${m}/${d}`, "iYYYY/iM/iD", true);
+    }else{
+      base = moment(`${y}/${m}/${d}`, "jYYYY/jM/jD", true);
+    }
+    if(!base.isValid()){ box.textContent="⚠️ التاريخ المدخل غير صالح."; return; }
+
+    base = base.local();
+
+    const gY = base.year(), gM = base.month()+1, gD = base.date();
+    const hY = base.format("iYYYY"), hM = Number(base.format("iM")), hD = Number(base.format("iD"));
+    const sY = base.jYear(), sM = base.jMonth()+1, sD = base.jDate();
+
+    let gShow = `${gY}/${pad2(gM)}/${pad2(gD)}`;
+    let hShow = `${hY}/${pad2(hM)}/${pad2(hD)}`;
+    let sShow = `${sY}/${pad2(sM)}/${pad2(sD)}`;
+
+    if(digits==="base60"){
+      gShow = `${toBase60(gY)}/${toBase60(gM)}/${toBase60(gD)}`;
+      hShow = `${toBase60(hY)}/${toBase60(hM)}/${toBase60(hD)}`;
+      sShow = `${toBase60(sY)}/${toBase60(sM)}/${toBase60(sD)}`;
     }
 
-    const {d, m, y} = inp;
+    const gMonthName = gregMonthsAr[gM-1] || "";
+    const hMonthName = hijriMonthsAr[hM-1] || "";
+    const sMonthName = solarMonthsAr[sM-1] || "";
 
-    let baseMoment;
-
-    try{
-      if (mode === "greg"){
-        // إدخال ميلادي
-        baseMoment = moment(`${y}/${m}/${d}`, "YYYY/M/D", true);
-      } else if (mode === "hijri"){
-        // إدخال هجري (moment-hijri)
-        baseMoment = moment(`${y}/${m}/${d}`, "iYYYY/iM/iD", true);
-      } else {
-        // إدخال جلالي (moment-jalaali) — “بابلي”
-        baseMoment = moment(`${y}/${m}/${d}`, "jYYYY/jM/jD", true);
-      }
-
-      if (!baseMoment.isValid()){
-        box.innerHTML = "⚠️ التاريخ المدخل غير صالح. تأكد من اليوم والشهر والسنة.";
-        return;
-      }
-
-      // مخرجات
-      const gY = baseMoment.format("YYYY");
-      const gM = baseMoment.format("M");
-      const gD = baseMoment.format("D");
-      const gMonthName = gregMonthsAr[Number(gM)-1] || "";
-
-      const h = baseMoment.format("iYYYY/iMM/iDD");
-      const hM = Number(baseMoment.format("iM"));
-      const hMonthName = hijriMonthsAr[hM-1] || "";
-
-      const j = baseMoment.format("jYYYY/jMM/jDD"); // هنا الإصلاح: لا تظهر j كنص
-      const jM = Number(baseMoment.format("jM"));
-      const jMonthName = jalaaliMonthsAr[jM-1] || "";
-      const babMonthName = babylonMonthsAkk[jM-1] || "";
-
-      // “أرقام بابليّة” (اختياري): Base-60
-      let gShow = `${gY}/${pad2(gM)}/${pad2(gD)}`;
-      let hShow = h;
-      let jShow = j;
-
-      if (digitsMode === "base60"){
-        gShow = `${toBase60(gY)}/${toBase60(gM)}/${toBase60(gD)}`;
-        // للهجري/الجلالي نخليها أيضاً ستيني بنفس الفكرة
-        const hy = baseMoment.format("iYYYY");
-        const hm = baseMoment.format("iM");
-        const hd = baseMoment.format("iD");
-        hShow = `${toBase60(hy)}/${toBase60(hm)}/${toBase60(hd)}`;
-
-        const jy = baseMoment.format("jYYYY");
-        const jm = baseMoment.format("jM");
-        const jd = baseMoment.format("jD");
-        jShow = `${toBase60(jy)}/${toBase60(jm)}/${toBase60(jd)}`;
-      }
-
-      box.innerHTML =
-        `الميلادي: ${gShow} <span class="pill">${gMonthName}</span><br>` +
-        `الهجري: ${hShow} <span class="pill">${hMonthName}</span><br>` +
-        `البابلي (جلالي): ${jShow} <span class="pill">${babMonthName}</span> <span class="pill">${jMonthName}</span>` +
-        `<span class="muted">إذا أردت “رموز مسمارية” حقيقية للأرقام، أخبرني وسأضيفها كخيار ثالث.</span>`;
-    }catch(e){
-      box.innerHTML = "⚠️ حدث خطأ في التحويل. إذا تحب أرسل لي صورة من Console (إن وجدت) وسأصلحه فوراً.";
-    }
+    box.innerHTML =
+      `الميلادي: <b>${gShow}</b> <span style="color:var(--muted)">(${gMonthName})</span><br>`+
+      `الهجري: <b>${hShow}</b> <span style="color:var(--muted)">(${hMonthName})</span><br>`+
+      `الهجري الشمسي: <b>${sShow}</b> <span style="color:var(--muted)">(${sMonthName})</span>`;
   }
-
   document.getElementById("convertBtn").addEventListener("click", convert);
 
-  // تعبئة افتراضية: تاريخ اليوم
-  function fillTodayInputs(){
-    const g = moment();
-    document.getElementById("day").value = g.format("D");
-    document.getElementById("month").value = g.format("M");
-    document.getElementById("year").value = g.format("YYYY");
+  function fillToday(){
+    const t = moment();
+    document.getElementById("day").value = t.date();
+    document.getElementById("month").value = t.month()+1;
+    document.getElementById("year").value = t.year();
     document.getElementById("mode").value = "greg";
   }
 
-  showToday();
-  fillTodayInputs();
+  fillToday();
+  renderCalendar();
 </script>
 
 </body>
