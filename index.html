@@ -205,9 +205,12 @@ font-weight:bold;
 </div>
 
 <script>
-moment.loadPersian({usePersianDigits:false});
 
-let current = moment();
+moment.loadPersian({
+usePersianDigits:false,
+dialect:'persian-modern'
+});
+let current = moment().jYear(moment().year());
 
 const dayNames = ["السبت","الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
 
