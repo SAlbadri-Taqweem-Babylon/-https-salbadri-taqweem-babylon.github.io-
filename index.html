@@ -129,6 +129,23 @@
 
     document.getElementById("results").style.display = "block";
   }
+  // عرض تاريخ اليوم تلقائياً عند فتح الصفحة
+window.onload = function () {
+    const today = moment();
+    
+    const gregorian = today.format("YYYY/MM/DD");
+    const hijri = today.clone().format("iYYYY/iM/iD");
+    
+    const days = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+    const dayName = days[today.day()];
+    
+    const output = document.getElementById("output");
+    output.innerHTML = `
+    📅 اليوم: ${dayName}<br><br>
+    الميلادي: ${gregorian}<br>
+    الهجري القمري: ${hijri}
+    `;
+};
 </script>
 </body>
 </html>
